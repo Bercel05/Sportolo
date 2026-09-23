@@ -62,5 +62,46 @@ namespace Sportolo.Controllers
             connector.Close();
             return eredmenyek;
         }
+        [HttpPost("EredmenyPost")]
+        public object AddNewEredmeny(AddEredmenyDTOs eredmeny)
+        {
+            var connector = new MySqlConnection(ConnectionString);
+            connector.Open();
+            var erd = new Eredmenyek
+            {
+                competition = eredmeny.competition,
+                description = eredmeny.description,
+                resultTime = DateTime.Now,
+                updateTime = DateTime.Now,
+                sportoloId = eredmeny.sportoloId
+            };
+
+            var sql = $"INSERT INTO `eredmeny`(`competition`, `description`, `resultTime`, `updateTime`, `sportoloId`) VALUES (@comp,@desc,@res,@upd,@spid)";
+            var cmd = new MySqlCommand(sql, connector);
+            cmd.Parameters.AddWithValue("@comp", erd.competition);
+            cmd.Parameters.AddWithValue("@desc", erd.description);
+            cmd.Parameters.AddWithValue("@res", erd.resultTime);
+            cmd.Parameters.AddWithValue("@upd", erd.updateTime);
+            cmd.Parameters.AddWithValue("@spid", erd.sportoloId);
+            cmd.ExecuteNonQuery();
+            connector.Close();
+            return erd;
+        }
+        [HttpPut("EredmenyPut")]
+        public object UpdateEredmenyek(int id, Eredmenyek eredmenyek)
+        {
+            var connector = new MySqlConnection(ConnectionString);
+            connector.Open();
+            var sql = $"UPDATE `blogger` SET `competition`=@comp,`description`=@desc,`updateTime`=@updT,`sportoloId`=@sportId WHERE `id`=@id";
+            var cmd = new MySqlCommand(sql, connector);
+            cmd.Parameters.AddWithValue("@comp", eredmenyek.competition);
+            cmd.Parameters.AddWithValue("@desc", eredmenyek.description);
+            cmd.Parameters.AddWithValue("@updT", eredmenyek.updateTime);
+            cmd.Parameters.AddWithValue("@sportId", eredmenyek.sportoloId);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+            connector.Close();
+            return eredmenyek;
+        }
     }
 }
